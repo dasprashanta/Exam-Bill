@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Examination Remuneration Billing Portal</title>
+<style>
+/* ================= STYLES ================= */
+:root{--ink:#1a1a1a;--navy:#1f3a5f;--line:#9aa5b1;--soft:#f3f5f8;--err:#b00020}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);background:#e9edf2;font-size:15px;line-height:1.4}
+.page{max-width:1100px;margin:0 auto;background:#fff;padding:20px 24px 30px}
+.sticky{position:sticky;top:0;z-index:10;background:var(--navy);color:#fff;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:center;padding:8px 12px;font-size:14px}
+.sticky b{font-size:16px}
+header.inst{display:flex;align-items:center;gap:16px;border-bottom:3px double var(--navy);padding-bottom:10px;margin-bottom:12px}
+.logo{width:80px;height:80px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:#777;flex:none}
+.logo img{max-width:100%;max-height:100%}
+.logo.none{}
+.inst .txt{flex:1;text-align:center}
+.inst h1{margin:0;font-size:22px;color:var(--navy);text-transform:uppercase}
+.inst p{margin:2px 0}
+.billtitle{text-align:center;font-size:18px;font-weight:700;letter-spacing:1px;margin:10px 0;text-decoration:underline}
+h2{font-size:15px;margin:18px 0 8px;padding:5px 8px;background:var(--navy);color:#fff;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px 16px}
+label{display:block;font-weight:600;font-size:13px;margin-bottom:2px}
+input,select{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:3px;width:100%;background:#fff;color:var(--ink)}
+input[readonly]{background:var(--soft)}
+input:focus,select:focus,button:focus-visible{outline:3px solid #2b6cb0;outline-offset:1px}
+input.invalid{border-color:var(--err);background:#fff4f4}
+.err{display:block;color:var(--err);font-size:12px;min-height:0}
+.req{color:var(--err)}
+.sec{margin-top:16px;break-inside:auto}
+.sec h3{margin:0 0 6px;font-size:14px;color:var(--navy);text-transform:uppercase;border-bottom:2px solid var(--navy);padding-bottom:3px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{border:1px solid var(--line);padding:4px 5px;text-align:left;vertical-align:middle;font-size:14px}
+th{background:var(--soft);font-size:13px}
+td.sl{width:38px;text-align:center}
+td.amt,th.amt{text-align:right;white-space:nowrap;font-weight:600;min-width:90px}
+td.act{width:70px;text-align:center}
+td input{padding:4px 5px;min-width:70px}
+td input.n{text-align:right;min-width:80px}
+.sub{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.sub strong{font-size:14px}
+button{font:inherit;cursor:pointer;padding:8px 14px;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:3px;font-weight:600}
+button.p{background:var(--navy);color:#fff}
+button.d{border-color:var(--err);color:var(--err)}
+button.sm{padding:3px 8px;font-size:13px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 6px;align-items:center}
+.btns select{width:auto}
+.status{font-size:12px;color:#555}
+.summary td:last-child{text-align:right;font-weight:600;width:160px}
+.summary{min-width:0}
+.grand td{font-size:17px;background:var(--soft);font-weight:700}
+.words{margin:8px 0;padding:8px;border:1px solid var(--line);font-weight:600}
+.decl{margin:14px 0}
+.sigs{display:flex;gap:40px;margin-top:60px;flex-wrap:wrap}
+.sig{flex:1;min-width:240px}
+.sig .ln{border-top:1px solid #000;padding-top:4px;font-weight:700;margin-bottom:6px}
+.sig p{margin:6px 0}
+.office{margin-top:26px;border:1px solid #000;padding:10px 12px}
+.office h3{margin:0 0 8px;font-size:14px;text-transform:uppercase}
+.office p{margin:8px 0}
+.office .chk label{display:inline-flex;align-items:center;gap:4px;font-weight:400;margin-right:14px;font-size:14px}
+.office .chk input{width:auto}
+.msg{border:1px solid var(--err);background:#fff4f4;color:var(--err);padding:8px 12px;margin:10px 0;display:none}
+.pageno{display:none}
+@media (max-width:600px){.page{padding:12px}.inst{flex-direction:column}}
+
+/* ================= PRINT (A4) ================= */
+@page{size:A4;margin:14mm 12mm 16mm 12mm;@bottom-center{content:"Page " counter(page) " of " counter(pages);font-size:10px}}
+@media print{
+ body{background:#fff;color:#000;font-size:11pt}
+ .page{max-width:none;padding:0}
+ .no-print,.sticky,.btns,.msg,.err,td.act,th.act,.sec.empty{display:none!important}
+ h2{background:none;color:#000;border:1px solid #000;border-width:1px 0;padding:3px 4px}
+ .inst{border-bottom:3px double #000}.inst h1,.sec h3{color:#000}
+ .logo{border:none}.logo.none{display:none}
+ .tw{overflow:visible}
+ table{min-width:0;width:100%}
+ th,td{border:1px solid #000;font-size:10pt;padding:3px 4px}
+ th{background:#eee!important;-webkit-print-color-adjust:exact}
+ tr,.sig,.office,.words,.decl{break-inside:avoid}
+ thead{display:table-header-group}
+ input,select{border:none!important;background:none!important;padding:0!important;appearance:none;-webkit-appearance:none;color:#000;min-width:0!important;width:100%}
+ td.amt{min-width:0}
+ .grand td{background:#eee!important;-webkit-print-color-adjust:exact}
+ .office .chk input{appearance:auto;-webkit-appearance:checkbox;width:auto}
+ .sigs{margin-top:50px}
+ .info-grid .noval{display:none}
+}
+</style>
+</head>
+<body>
+<div class="sticky no-print" aria-live="polite">
+ <span>Sections used: <b id="sSec">0</b></span>
+ <span>Billing entries: <b id="sEnt">0</b></span>
+ <span>Grand Total: <b id="sTot">৳0</b></span>
+</div>
+
+<main class="page">
+<!-- ============ COLLEGE HEADER ============ -->
+<header class="inst">
+ <div class="logo none" id="logoBox" aria-label="College logo placeholder">LOGO</div>
+ <div class="txt">
+  <h1 id="hName">COLLEGE / INSTITUTE NAME</h1>
+  <p id="hAddr">College Address</p>
+  <p id="hCity">City, District, Bangladesh</p>
+ </div>
+ <div style="width:80px" class="no-print"></div>
+</header>
+<div class="billtitle">EXAMINATION REMUNERATION BILL</div>
+
+<div id="msgBox" class="msg" role="alert"></div>
+
+<p class="no-print" style="margin:6px 0"><label style="display:inline-flex;gap:6px;align-items:center;font-weight:600">
+ <input type="checkbox" id="presetOn" style="width:auto"> Use Preset Rate: <span id="presetLbl">OFF</span></label>
+ <span class="status"> &nbsp;(Fills standard rates automatically; you may still type your own rate.)</span></p>
+
+<!-- ============ BILL INFORMATION ============ -->
+<h2>Bill Information</h2>
+<div class="grid info-grid">
+ <div><label for="billId">Bill ID</label><input id="billId" readonly></div>
+ <div><label for="billDate">Bill Date</label><input id="billDate" type="date"></div>
+ <div><label for="examName">Examination Name <span class="req">*</span></label><input id="examName" data-req="Examination name is required" placeholder="e.g. Final Examination"><span class="err"></span></div>
+ <div><label for="examMonth">Examination Month <span class="req">*</span></label>
+  <select id="examMonth" data-req="Please select the examination month"><option value="">-- Select --</option></select><span class="err"></span></div>
+ <div><label for="examYear">Examination Year <span class="req">*</span></label><input id="examYear" type="number" min="2000" max="2100" step="1" data-req="Examination year is required"><span class="err"></span></div>
+</div>
+
+<!-- ============ TEACHER INFORMATION ============ -->
+<h2>Teacher Information</h2>
+<div class="grid">
+ <div><label for="tName">Teacher Name <span class="req">*</span></label><input id="tName" data-req="Teacher name is required" autocomplete="off"><span class="err"></span></div>
+ <div><label for="tDesig">Designation</label><input id="tDesig"></div>
+ <div><label for="tDept">Department</label><input id="tDept"></div>
+ <div><label for="tEmp">Employee ID (optional)</label><input id="tEmp"></div>
+ <div><label for="tMob">Mobile Number (optional)</label><input id="tMob" type="tel"></div>
+</div>
+
+<!-- ============ DUTY SECTIONS (generated by JS) ============ -->
+<h2>Examination Remuneration Duties</h2>
+<div id="sections"></div>
+
+<!-- ============ TOTAL ============ -->
+<h2>Total Remuneration</h2>
+<table class="summary" aria-label="Summary of remuneration"><tbody id="sumBody"></tbody>
+ <tfoot><tr class="grand"><td>GRAND TOTAL</td><td id="grand">৳0</td></tr></tfoot></table>
+<div class="words">Amount in Words: <span id="words">Taka Zero Only.</span></div>
+
+<!-- ============ DECLARATION ============ -->
+<h2>Declaration</h2>
+<p class="decl" id="declText">I hereby certify that the above information is correct and that the examination-related duties mentioned above were performed by me.</p>
+
+<!-- ============ SIGNATURES ============ -->
+<div class="sigs">
+ <div class="sig"><div class="ln">Teacher's Signature</div>
+  <p>Teacher Name: <strong id="sigName">______________________</strong></p>
+  <p>Designation: <strong id="sigDesig">______________________</strong></p>
+  <p>Date: ______________________</p></div>
+ <div class="sig"><div class="ln">Verified By</div>
+  <p>Name: ______________________</p><p>Designation: __________________</p><p>Date: ______________________</p></div>
+</div>
+
+<!-- ============ OFFICE USE ============ -->
+<div class="office">
+ <h3>For Office Use Only</h3>
+ <p>Bill Checked By: ______________________</p>
+ <p>Approved By: __________________________</p>
+ <p class="chk">Payment Status: <label><input type="checkbox"> Pending</label><label><input type="checkbox"> Approved</label><label><input type="checkbox"> Paid</label></p>
+ <p>Payment Date: _________________________</p>
+</div>
+
+<!-- ============ BUTTONS ============ -->
+<div class="btns no-print">
+ <select id="dutySel" aria-label="Choose duty section to add a row to"></select>
+ <button type="button" id="bAdd">+ Add Duty</button>
+ <button type="button" id="bCalc">Calculate</button>
+ <button type="button" id="bPrint" class="p">Print Bill</button>
+ <button type="button" id="bPdf" class="p">Save as PDF</button>
+ <button type="button" id="bRestore">Restore Saved Bill</button>
+ <button type="button" id="bClear" class="d">Clear Saved Data</button>
+ <button type="button" id="bReset" class="d">Reset Form</button>
+</div>
+<div class="status no-print" id="saveStatus" aria-live="polite"></div>
+<p class="status no-print">Tip: for "Save as PDF", choose "Save as PDF" as the destination in the print dialog, paper size A4.</p>
+</main>
+
+<script>
+/* ================= CONFIGURATION (edit here) ================= */
+const CONFIG = {
+  collegeName: "Millennium Nursing Institute",
+  collegeAddress: "53, Modina Tower, Jatrabari",
+  city: "Dhaka-1236, Bangladesh",
+  billPrefix: "MNI-ERB",      // institution abbreviation + ERB
+  currency: "৳",
+  logoSrc: "",                // e.g. "logo.png" or a data: URL; leave empty for placeholder
+  storageKey: "examBillDraft_v1"
+};
+/* Example preset rates (Taka). Administrator may change freely. */
+const PRESET_RATES = {
+  questionPreparation: 20,
+  questionModeration: 10,
+  scriptEvaluation: 15,
+  viva: 20,
+  invigilation: 500,
+  practical: 20
+};
+
+/* ================= SECTION DEFINITIONS =================
+   f: fields  t=text, d=date, n=number. The LAST TWO fields are always Quantity and Rate. */
+const SECTIONS = [
+ {key:"questionPreparation",id:"A",title:"Question Paper Preparation",sub:"Question Paper Preparation Subtotal",add:"ADD SUBJECT",
+  f:[{k:"year",l:"Year/Class",t:"t",ph:"2nd Year"},{k:"subject",l:"Subject",t:"t",ph:"Subject"},{k:"qty",l:"No. of Questions",t:"n"},{k:"rate",l:"Rate per Question",t:"n"}]},
+ {key:"questionModeration",id:"B",title:"Question Paper Moderation",sub:"Question Moderation Subtotal",add:"ADD ROW",
+  f:[{k:"year",l:"Year/Class",t:"t",ph:"2nd Year"},{k:"subject",l:"Subject",t:"t",ph:"Subject"},{k:"qty",l:"No. of Papers/Questions",t:"n"},{k:"rate",l:"Rate",t:"n"}]},
+ {key:"scriptEvaluation",id:"C",title:"Answer Script Evaluation",sub:"Answer Script Evaluation Subtotal",add:"ADD ROW",
+  f:[{k:"year",l:"Year/Class",t:"t",ph:"2nd Year"},{k:"subject",l:"Subject",t:"t",ph:"Subject"},{k:"qty",l:"No. of Scripts",t:"n"},{k:"rate",l:"Rate per Script",t:"n"}]},
+ {key:"viva",id:"D",title:"Viva Examination",sub:"Viva Examination Subtotal",add:"ADD ROW",
+  f:[{k:"year",l:"Year/Class",t:"t",ph:"2nd Year"},{k:"subject",l:"Subject",t:"t",ph:"Subject"},{k:"qty",l:"No. of Students",t:"n"},{k:"rate",l:"Rate per Student",t:"n"}]},
+ {key:"invigilation",id:"E",title:"Examination Invigilation",sub:"Invigilation Subtotal",add:"ADD ROW",defQty:1,
+  f:[{k:"date",l:"Exam Date",t:"d"},{k:"year",l:"Year/Class",t:"t",ph:"2nd Year"},{k:"hall",l:"Hall No.",t:"t",ph:"Hall"},{k:"qty",l:"No. of Sessions",t:"n"},{k:"rate",l:"Rate/Session",t:"n"}]},
+ {key:"practical",id:"F",title:"Practical / Clinical Examination",sub:"Practical/Clinical Examination Subtotal",add:"ADD ROW",
+  f:[{k:"date",l:"Exam Date",t:"d"},{k:"year",l:"Year/Class",t:"t",ph:"2nd Year"},{k:"subject",l:"Subject",t:"t",ph:"Subject"},{k:"qty",l:"No. of Students",t:"n"},{k:"rate",l:"Rate per Student",t:"n"}]},
+ {key:"result",id:"G",title:"Result / Tabulation Work",sub:"Result/Tabulation Subtotal",add:"ADD ROW",
+  f:[{k:"year",l:"Year/Class",t:"t",ph:"2nd Year"},{k:"desc",l:"Subject/Work Description",t:"t",ph:"Result preparation, tabulation, mark entry..."},{k:"qty",l:"Quantity",t:"n"},{k:"rate",l:"Rate",t:"n"}]},
+ {key:"other",id:"H",title:"Other Examination Duties",sub:"Other Duties Subtotal",add:"ADD ROW",
+  f:[{k:"date",l:"Date",t:"d"},{k:"year",l:"Year/Class",t:"t",ph:"2nd Year"},{k:"desc",l:"Description of Duty",t:"t",ph:"Typing, OSCE, coordination..."},{k:"qty",l:"Quantity",t:"n"},{k:"rate",l:"Rate",t:"n"}]}
+];
+
+/* ================= HELPERS ================= */
+const $ = (id) => document.getElementById(id);
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const INFO_IDS = ["billId","billDate","examName","examMonth","examYear","tName","tDesig","tDept","tEmp","tMob"];
+let suppressSave = false;
+
+/** Format a number as Taka with Bangladeshi (lakh/crore) grouping. */
+function fmt(n){ return CONFIG.currency + Number(n).toLocaleString("en-IN",{minimumFractionDigits:0,maximumFractionDigits:2}); }
+function round2(n){ return Math.round((n + Number.EPSILON) * 100) / 100; }
+
+/** Read a numeric input. Invalid/negative values are flagged and counted as 0. */
+function readNum(el){
+  const raw = el.value.trim();
+  if(raw === ""){ el.classList.remove("invalid"); el.title=""; return 0; }
+  const v = Number(raw);
+  const bad = !isFinite(v) || v < 0 || el.validity.badInput;
+  el.classList.toggle("invalid", bad);
+  el.title = bad ? "Enter a number that is 0 or greater" : "";
+  return bad ? 0 : v;
+}
+
+/* ================= AMOUNT IN WORDS (Bangladeshi system) ================= */
+const ONES = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+const TENS = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+function below100(n){ return n < 20 ? ONES[n] : TENS[Math.floor(n/10)] + (n%10 ? " " + ONES[n%10] : ""); }
+function below1000(n){
+  const h = Math.floor(n/100), r = n % 100, p = [];
+  if(h) p.push(ONES[h] + " Hundred");
+  if(r) p.push(below100(r));
+  return p.join(" ");
+}
+/** Integer to words using crore / lakh / thousand. Crore part recurses so any size works. */
+function numToWords(n){
+  if(n === 0) return "Zero";
+  const p = [];
+  const crore = Math.floor(n/1e7); n %= 1e7;
+  const lakh = Math.floor(n/1e5); n %= 1e5;
+  const th = Math.floor(n/1e3); n %= 1e3;
+  if(crore) p.push(numToWords(crore) + " Crore");
+  if(lakh) p.push(below100(lakh) + " Lakh");
+  if(th) p.push(below100(th) + " Thousand");
+  if(n) p.push(below1000(n));
+  return p.join(" ");
+}
+function amountInWords(total){
+  total = round2(total);
+  const taka = Math.floor(total), paisa = Math.round((total - taka) * 100);
+  return "Taka " + numToWords(taka) + (paisa ? " and " + numToWords(paisa) + " Paisa" : "") + " Only.";
+}
+
+/* ================= BILL ID ================= */
+/** Format: PREFIX-YYYYMMDD-NNN. NNN increases per day on this browser. */
+function generateBillId(){
+  const d = new Date();
+  const ymd = d.getFullYear() + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0");
+  let seq = {};
+  try{ seq = JSON.parse(localStorage.getItem("examBillSeq") || "{}"); }catch(e){}
+  const n = (seq[ymd] || 0) + 1;
+  seq = {}; seq[ymd] = n;
+  try{ localStorage.setItem("examBillSeq", JSON.stringify(seq)); }catch(e){}
+  return CONFIG.billPrefix + "-" + ymd + "-" + String(n).padStart(3,"0");
+}
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+/* ================= BUILD UI ================= */
+function buildStatic(){
+  $("hName").textContent = CONFIG.collegeName;
+  $("hAddr").textContent = CONFIG.collegeAddress;
+  $("hCity").textContent = CONFIG.city;
+  if(CONFIG.logoSrc){
+    const img = document.createElement("img"); img.src = CONFIG.logoSrc; img.alt = "College logo";
+    $("logoBox").textContent = ""; $("logoBox").appendChild(img); $("logoBox").classList.remove("none");
+  }
+  MONTHS.forEach(m => { const o = document.createElement("option"); o.value = m; o.textContent = m; $("examMonth").appendChild(o); });
+  SECTIONS.forEach(s => {
+    const o = document.createElement("option"); o.value = s.key; o.textContent = s.id + ". " + s.title; $("dutySel").appendChild(o);
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + s.title + "</td><td id='sum_" + s.key + "'>" + fmt(0) + "</td>";
+    $("sumBody").appendChild(tr);
+    buildSection(s);
+  });
+}
+
+/** Build one duty section (heading, table, add button, subtotal). */
+function buildSection(s){
+  const sec = document.createElement("section");
+  sec.className = "sec"; sec.id = "sec_" + s.key; sec.setAttribute("aria-labelledby", "h_" + s.key);
+  let head = "<th>SL</th>" + s.f.map(f => "<th" + (f.t==="n" ? " style='text-align:right'" : "") + ">" + f.l + "</th>").join("") + "<th class='amt'>Amount</th><th class='act'>Action</th>";
+  sec.innerHTML =
+    "<h3 id='h_" + s.key + "'>" + s.id + ". " + s.title + "</h3>" +
+    "<div class='tw'><table><thead><tr>" + head + "</tr></thead><tbody></tbody></table></div>" +
+    "<div class='sub'><button type='button' class='sm no-print' data-add='" + s.key + "'>+ " + s.add + "</button>" +
+    "<strong>" + s.sub + ": <span id='st_" + s.key + "'>" + fmt(0) + "</span></strong></div>";
+  $("sections").appendChild(sec);
+  sec.querySelector("[data-add]").addEventListener("click", () => { addRow(s.key); recalc(); save(); });
+  addRow(s.key);
+}
+
+/** Add a row to a section; optional data restores saved values. */
+function addRow(key, data){
+  const s = SECTIONS.find(x => x.key === key);
+  const tb = document.querySelector("#sec_" + key + " tbody");
+  const tr = document.createElement("tr");
+  const sl = document.createElement("td"); sl.className = "sl"; tr.appendChild(sl);
+  s.f.forEach((f, i) => {
+    const td = document.createElement("td"), inp = document.createElement("input");
+    inp.dataset.k = f.k;
+    inp.setAttribute("aria-label", s.title + " - " + f.l);
+    if(f.t === "n"){ inp.type = "number"; inp.min = "0"; inp.step = "any"; inp.className = "n"; inp.inputMode = "decimal"; inp.placeholder = "0"; }
+    else if(f.t === "d"){ inp.type = "date"; }
+    else { inp.type = "text"; if(f.ph) inp.placeholder = f.ph; }
+    if(f.k === "qty") inp.classList.add("q");
+    if(f.k === "rate"){
+      inp.classList.add("r");
+      inp.addEventListener("input", () => { tr.dataset.manual = "1"; });
+    }
+    if(data && data[f.k] !== undefined) inp.value = data[f.k];
+    else if(f.k === "qty" && s.defQty) inp.value = s.defQty;
+    td.appendChild(inp); tr.appendChild(td);
+  });
+  const am = document.createElement("td"); am.className = "amt"; am.textContent = fmt(0); tr.appendChild(am);
+  const ac = document.createElement("td"); ac.className = "act";
+  const del = document.createElement("button"); del.type = "button"; del.className = "sm d"; del.textContent = "Delete";
+  del.setAttribute("aria-label", "Delete row from " + s.title);
+  del.addEventListener("click", () => removeRow(tr));
+  ac.appendChild(del); tr.appendChild(ac);
+  if(data && data.manual) tr.dataset.manual = "1";
+  tb.appendChild(tr);
+  if(!data) applyPresetToRow(tr, key);
+  renumber(key);
+}
+
+/** Remove a row; always keep at least one row per section. */
+function removeRow(tr){
+  const tb = tr.parentNode, key = tb.closest(".sec").id.replace("sec_","");
+  if(tb.children.length === 1){
+    tr.querySelectorAll("input").forEach(i => { i.value = ""; i.classList.remove("invalid"); });
+    delete tr.dataset.manual;
+    const s = SECTIONS.find(x => x.key === key);
+    if(s.defQty) tr.querySelector(".q").value = s.defQty;
+  } else tb.removeChild(tr);
+  renumber(key); recalc(); save();
+}
+
+/** Renumber SL column. */
+function renumber(key){
+  document.querySelectorAll("#sec_" + key + " tbody tr").forEach((tr, i) => { tr.firstChild.textContent = i + 1; });
+}
+
+/* ================= PRESET RATES ================= */
+function applyPresetToRow(tr, key){
+  if(!$("presetOn").checked || tr.dataset.manual || PRESET_RATES[key] === undefined) return;
+  const r = tr.querySelector(".r"); if(r) r.value = PRESET_RATES[key];
+}
+function applyPresets(){
+  SECTIONS.forEach(s => document.querySelectorAll("#sec_" + s.key + " tbody tr").forEach(tr => applyPresetToRow(tr, s.key)));
+}
+
+/* ================= CALCULATIONS ================= */
+/** Row amount = quantity x rate (invalid values count as 0). */
+function calcRow(tr){
+  const amt = round2(readNum(tr.querySelector(".q")) * readNum(tr.querySelector(".r")));
+  tr.querySelector(".amt").textContent = fmt(amt);
+  return amt;
+}
+/** Recalculate every row, section subtotal, grand total, words, summary and signature. */
+function recalc(){
+  let grand = 0, used = 0, entries = 0;
+  SECTIONS.forEach(s => {
+    let sub = 0, cnt = 0;
+    document.querySelectorAll("#sec_" + s.key + " tbody tr").forEach(tr => {
+      const a = calcRow(tr); sub += a;
+      if(a > 0) cnt++;
+    });
+    sub = round2(sub);
+    $("st_" + s.key).textContent = fmt(sub);
+    $("sum_" + s.key).textContent = fmt(sub);
+    $("sec_" + s.key).classList.toggle("empty", cnt === 0);
+    if(cnt > 0) used++;
+    entries += cnt; grand += sub;
+  });
+  grand = round2(grand);
+  $("grand").textContent = fmt(grand);
+  $("sTot").textContent = fmt(grand);
+  $("sSec").textContent = used; $("sEnt").textContent = entries;
+  $("words").textContent = amountInWords(grand);
+  updateTeacherInfo();
+}
+function updateTeacherInfo(){
+  $("sigName").textContent = $("tName").value.trim() || "______________________";
+  $("sigDesig").textContent = $("tDesig").value.trim() || "______________________";
+}
+
+/* ================= VALIDATION ================= */
+/** Validate required fields with inline messages. Returns true when valid. */
+function validate(){
+  let ok = true, first = null;
+  document.querySelectorAll("[data-req]").forEach(el => {
+    const empty = el.value.trim() === "";
+    const yr = el.id === "examYear" && !empty && (!/^\d{4}$/.test(el.value.trim()));
+    const bad = empty || yr;
+    el.classList.toggle("invalid", bad);
+    el.nextElementSibling.textContent = bad ? (yr ? "Enter a valid 4-digit year" : el.dataset.req) : "";
+    if(bad){ ok = false; if(!first) first = el; }
+  });
+  const invalidNums = document.querySelectorAll("td input.invalid").length;
+  const box = $("msgBox");
+  if(!ok || invalidNums){
+    box.style.display = "block";
+    box.textContent = (!ok ? "Please complete the required fields marked in red. " : "") + (invalidNums ? "Some quantity/rate values are invalid (must be numbers 0 or greater); they are counted as 0." : "");
+    if(first) first.focus();
+  } else box.style.display = "none";
+  return ok && !invalidNums;
+}
+
+/* ================= SAVE / RESTORE ================= */
+function collect(){
+  const d = {info:{}, preset:$("presetOn").checked, sections:{}};
+  INFO_IDS.forEach(id => d.info[id] = $(id).value);
+  SECTIONS.forEach(s => {
+    d.sections[s.key] = [...document.querySelectorAll("#sec_" + s.key + " tbody tr")].map(tr => {
+      const o = {}; tr.querySelectorAll("input").forEach(i => o[i.dataset.k] = i.value);
+      if(tr.dataset.manual) o.manual = true; return o;
+    });
+  });
+  return d;
+}
+function save(){
+  if(suppressSave) return;
+  try{
+    localStorage.setItem(CONFIG.storageKey, JSON.stringify(collect()));
+    const t = new Date();
+    $("saveStatus").textContent = "Draft auto-saved at " + t.toLocaleTimeString();
+  }catch(e){ $("saveStatus").textContent = "Auto-save is not available in this browser."; }
+}
+/** Restore saved data. Returns true if something was restored. */
+function restore(){
+  let raw = null;
+  try{ raw = localStorage.getItem(CONFIG.storageKey); }catch(e){}
+  if(!raw){ $("saveStatus").textContent = "No saved bill found."; return false; }
+  try{
+    const d = JSON.parse(raw); suppressSave = true;
+    INFO_IDS.forEach(id => { if(d.info && d.info[id] !== undefined) $(id).value = d.info[id]; });
+    $("presetOn").checked = !!d.preset; $("presetLbl").textContent = d.preset ? "ON" : "OFF";
+    SECTIONS.forEach(s => {
+      const tb = document.querySelector("#sec_" + s.key + " tbody"); tb.innerHTML = "";
+      const rows = (d.sections && d.sections[s.key]) || [];
+      if(rows.length) rows.forEach(r => addRow(s.key, r)); else addRow(s.key);
+    });
+    suppressSave = false; recalc();
+    $("saveStatus").textContent = "Saved bill restored.";
+    return true;
+  }catch(e){ suppressSave = false; $("saveStatus").textContent = "Saved data could not be read."; return false; }
+}
+
+/* ================= RESET ================= */
+function resetForm(){
+  if(!confirm("This will delete all entered information on this form. Continue?")) return;
+  suppressSave = true;
+  ["examName","examMonth","examYear","tName","tDesig","tDept","tEmp","tMob"].forEach(id => $(id).value = "");
+  $("billId").value = generateBillId(); $("billDate").value = todayISO();
+  SECTIONS.forEach(s => { document.querySelector("#sec_" + s.key + " tbody").innerHTML = ""; addRow(s.key); });
+  document.querySelectorAll(".invalid").forEach(e => e.classList.remove("invalid"));
+  document.querySelectorAll(".err").forEach(e => e.textContent = "");
+  $("msgBox").style.display = "none";
+  suppressSave = false; recalc(); save();
+}
+
+/* ================= PRINT ================= */
+/** Print (also used for Save as PDF via the browser dialog). */
+function printBill(){
+  recalc();
+  if(!validate()) return;
+  document.title = $("billId").value + " - " + ($("tName").value.trim() || "Bill");
+  window.print();
+}
+
+/* ================= INIT ================= */
+function init(){
+  buildStatic();
+  $("billId").value = generateBillId();
+  $("billDate").value = todayISO();
+  $("examYear").value = new Date().getFullYear();
+  // Auto-restore an unsaved draft after an accidental refresh
+  let had = null; try{ had = localStorage.getItem(CONFIG.storageKey); }catch(e){}
+  if(had) restore();
+  recalc();
+
+  document.addEventListener("input", e => {
+    if(e.target.matches("td input")) calcRow(e.target.closest("tr"));
+    recalc(); save();
+  });
+  document.addEventListener("change", () => { recalc(); save(); });
+  document.querySelectorAll("[data-req]").forEach(el => el.addEventListener("blur", () => { if(el.value.trim()!=="" ) { el.classList.remove("invalid"); el.nextElementSibling.textContent=""; } }));
+  $("presetOn").addEventListener("change", () => {
+    $("presetLbl").textContent = $("presetOn").checked ? "ON" : "OFF";
+    applyPresets(); recalc(); save();
+  });
+  $("bAdd").addEventListener("click", () => { addRow($("dutySel").value); recalc(); save(); });
+  $("bCalc").addEventListener("click", () => { recalc(); validate(); });
+  $("bPrint").addEventListener("click", printBill);
+  $("bPdf").addEventListener("click", printBill);
+  $("bRestore").addEventListener("click", () => { restore(); });
+  $("bClear").addEventListener("click", () => {
+    if(!confirm("Clear the saved draft from this browser? The form on screen will remain.")) return;
+    try{ localStorage.removeItem(CONFIG.storageKey); }catch(e){}
+    $("saveStatus").textContent = "Saved data cleared.";
+  });
+  $("bReset").addEventListener("click", resetForm);
+}
+init();
+</script>
+</body>
+</html>
